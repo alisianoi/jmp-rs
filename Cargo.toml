@@ -5,6 +5,7 @@ authors = ["Aleksandr Lisianoi <alisianoi@protonmail.com>"]
 edition = "2018"
 readme = "README.md"
 repository = "https://github.com/alisianoi/jmp-rs"
+description = "Great for jumping around!"
 license = "MIT"
 license-file = "LICENSE"
 
