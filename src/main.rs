@@ -3,12 +3,15 @@ use log::{debug, error, info, trace, warn};
 // use std::env::VarError;
 use clap::{App, Arg, SubCommand};
 
+mod config;
+use config::Config;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let subcommand_install =
         SubCommand::with_name("install").about("Installs jmp-rs");
     let subcommand_uninstall =
         SubCommand::with_name("uninstall").about("Uninstalls jmp-rs");
-    let matches = App::new("jmp-rs")
+    let args = App::new("jmp-rs")
         .arg(
             Arg::with_name("v")
                 .short("v")
@@ -27,9 +30,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .subcommand(subcommand_uninstall)
         .get_matches();
 
-    println!("The count for verboisty: {}", matches.occurrences_of("v"));
+    println!("The count for verboisty: {}", args.occurrences_of("v"));
 
-    setup_logger(matches.is_present("q"), matches.occurrences_of("v"))?;
+    let config = Config::new(args.is_present("q"), args.occurrences_of("v"));
+
+    setup_logger(&config)?;
 
     debug!("Hello, world!");
 
@@ -58,7 +63,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn setup_logger(quiet: bool, verbose: u64) -> Result<(), fern::InitError> {
+fn setup_logger(config: &Config) -> Result<(), fern::InitError> {
     let colors = fern::colors::ColoredLevelConfig::new()
         .trace(fern::colors::Color::BrightWhite)
         .debug(fern::colors::Color::White)
@@ -66,18 +71,7 @@ fn setup_logger(quiet: bool, verbose: u64) -> Result<(), fern::InitError> {
         .warn(fern::colors::Color::Magenta)
         .error(fern::colors::Color::Red);
 
-    let level = match verbose {
-        0 => log::LevelFilter::Error,
-        1 => log::LevelFilter::Warn,
-        2 => log::LevelFilter::Info,
-        3 => log::LevelFilter::Debug,
-        _ => log::LevelFilter::Trace,
-    };
-
-    let level = match quiet {
-        true => log::LevelFilter::Off,
-        _ => level,
-    };
+    let level = config.level;
 
     fern::Dispatch::new()
         .format(move |out, message, record| {
