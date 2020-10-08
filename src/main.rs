@@ -7,36 +7,48 @@ mod config;
 use config::Config;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let subcommand_install =
-        SubCommand::with_name("install").about("Installs jmp-rs");
-    let subcommand_uninstall =
-        SubCommand::with_name("uninstall").about("Uninstalls jmp-rs");
+    let arg_verbose = Arg::with_name("v")
+        .short("v")
+        .long("verbose")
+        .multiple(true)
+        .help("Sets the level of verbosity");
+    let arg_quiet = Arg::with_name("q")
+        .short("q")
+        .long("quiet")
+        .multiple(false)
+        .help("Disables all output");
+
+    let subcommand_install = SubCommand::with_name("install")
+        .about("Installs jmp-rs")
+        .arg(&arg_verbose)
+        .arg(&arg_quiet);
+    let subcommand_uninstall = SubCommand::with_name("uninstall")
+        .about("Uninstalls jmp-rs")
+        .arg(&arg_verbose)
+        .arg(&arg_quiet);
+
     let args = App::new("jmp-rs")
-        .arg(
-            Arg::with_name("v")
-                .short("v")
-                .long("verbose")
-                .multiple(true)
-                .help("Sets the level of verbosity"),
-        )
-        .arg(
-            Arg::with_name("q")
-                .short("q")
-                .long("quiet")
-                .multiple(false)
-                .help("Disables all output"),
-        )
+        .arg(arg_verbose)
+        .arg(arg_quiet)
         .subcommand(subcommand_install)
         .subcommand(subcommand_uninstall)
         .get_matches();
 
-    println!("The count for verboisty: {}", args.occurrences_of("v"));
+    println!("The count for verboisty: {:#?}", args);
 
     let config = Config::new(args.is_present("q"), args.occurrences_of("v"));
 
     setup_logger(&config)?;
 
-    debug!("Hello, world!");
+    if let Some(_) = args.subcommand_matches("install") {
+        debug!("The install subcommand is there");
+    }
+
+    if let Some(_) = args.subcommand_matches("uninstall") {
+        debug!("The uninstall subcommand is there");
+    }
+
+    // debug!("Hello, world!");
 
     // let var_alex = match env::var("ALEX") {
     //     Ok(value) => value,
@@ -54,11 +66,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // info!("The $ALEX var is {:#?}", var_alex);
 
-    trace!("Here is a trace");
-    debug!("Here is a debug");
-    info!("Here is an info");
-    warn!("Here is a warning");
-    error!("Here is an error");
+    // trace!("Here is a trace");
+    // debug!("Here is a debug");
+    // info!("Here is an info");
+    // warn!("Here is a warning");
+    // error!("Here is an error");
 
     Ok(())
 }
