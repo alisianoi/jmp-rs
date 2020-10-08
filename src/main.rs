@@ -34,7 +34,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .subcommand(subcommand_uninstall)
         .get_matches();
 
-    println!("The count for verboisty: {:#?}", args);
+    // println!("The count for verboisty: {:#?}", args);
+
+    match args.subcommand() {
+        ("install", Some(_)) => {
+            println!("subcommand: install");
+        }
+        ("uninstall", Some(_)) => {
+            println!("subcommand: uninstall");
+        }
+        ("", None) => {
+            println!("no subcommands");
+        }
+        _ => {
+            println!("unknown subcommand");
+        }
+    }
 
     let config = Config::new(args.is_present("q"), args.occurrences_of("v"));
 
