@@ -1,3 +1,4 @@
+use clap;
 use log;
 
 pub struct Config {
@@ -20,5 +21,9 @@ impl Config {
         };
 
         Config { level: level }
+    }
+
+    pub fn from_matches(matches: &clap::ArgMatches) -> Config {
+        Config::new(matches.is_present("q"), matches.occurrences_of("v"))
     }
 }
