@@ -1,6 +1,7 @@
 use log::{debug, error, trace};
 use std::env;
 use std::env::VarError;
+use std::path;
 
 use crate::config::Config;
 use crate::logger::setup_logger;
@@ -13,6 +14,8 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn std::error::Error>> {
 
     trace!("Enter run()");
 
+    // $SHELL, if present, is the default shell of the current user
+    // It is not necessarily the currently running shell
     let var_shell = match env::var("SHELL") {
         Ok(value) => {
             debug!("$SHELL is: {}", value);
@@ -26,6 +29,17 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn std::error::Error>> {
             let msg = "$SHELL is not Unicode!";
             error!("{}", msg);
             panic!(msg);
+        }
+    };
+
+    let exists_etc_zsh = match path::Path::new("/etc/zsh").exists() {
+        true => {
+            debug!("/etc/zsh exists!");
+            true
+        }
+        false => {
+            debug!("/etc/zsh does *not* exist!");
+            false
         }
     };
 
