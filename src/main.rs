@@ -3,6 +3,7 @@
 use clap::{App, Arg, SubCommand};
 
 mod config;
+mod env;
 mod logger;
 mod subcommand;
 

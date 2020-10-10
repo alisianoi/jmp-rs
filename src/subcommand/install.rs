@@ -1,35 +1,11 @@
 use crate::config::Config;
+use crate::env::var_or_default;
 use crate::logger::setup_logger;
 use clap::ArgMatches;
 use log::{debug, error, info, trace, warn};
 use std::env;
-use std::env::VarError;
+
 use std::path;
-
-pub fn var(name: &str) -> Option<String> {
-    match env::var(name) {
-        Ok(value) => {
-            debug!("${} is: {}", name, value);
-            Some(value)
-        }
-        Err(VarError::NotPresent) => {
-            debug!("${} is not present", name);
-            None
-        }
-        Err(VarError::NotUnicode(_)) => {
-            let msg = format!("${} is not Unicode!", name);
-            error!("${}", msg);
-            panic!(msg);
-        }
-    }
-}
-
-pub fn var_or_default(name: &str) -> (String, bool) {
-    match var(name) {
-        Some(value) => (value, true),
-        None => (format!("${}", name), false),
-    }
-}
 
 pub fn exists(path_name: &str) -> bool {
     match path::Path::new(path_name).exists() {
