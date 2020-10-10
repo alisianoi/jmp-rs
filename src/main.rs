@@ -18,8 +18,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .multiple(false)
         .help("Disables all output");
 
+    let subcommand_jump = SubCommand::with_name("jump")
+        .about("Jumps to a directory")
+        .arg(&arg_verbose)
+        .arg(&arg_quiet);
     let subcommand_install = SubCommand::with_name("install")
         .about("Installs jmp-rs")
+        .arg(&arg_verbose)
+        .arg(&arg_quiet);
+    let subcommand_reinstall = SubCommand::with_name("reinstall")
+        .about("Uninstalls then installs jmp-rs")
         .arg(&arg_verbose)
         .arg(&arg_quiet);
     let subcommand_uninstall = SubCommand::with_name("uninstall")
@@ -30,7 +38,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = App::new("jmp-rs")
         .arg(arg_verbose)
         .arg(arg_quiet)
+        .subcommand(subcommand_jump)
         .subcommand(subcommand_install)
+        .subcommand(subcommand_reinstall)
         .subcommand(subcommand_uninstall)
         .get_matches();
 
