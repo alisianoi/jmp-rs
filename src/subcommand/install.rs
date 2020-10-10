@@ -1,33 +1,10 @@
 use crate::config::Config;
 use crate::env::var_or_default;
 use crate::logger::setup_logger;
+use crate::path::{exists, exists_if};
 use clap::ArgMatches;
-use log::{debug, error, info, trace, warn};
+use log::trace;
 use std::env;
-
-use std::path;
-
-pub fn exists(path_name: &str) -> bool {
-    match path::Path::new(path_name).exists() {
-        true => {
-            info!("Exists: {}", path_name);
-            true
-        }
-        false => {
-            warn!("Does *not* exist: {}", path_name);
-            false
-        }
-    }
-}
-
-pub fn exists_if(path_name: &str, condition: bool) -> bool {
-    if condition {
-        exists(path_name)
-    } else {
-        warn!("Does *not* exist: {}", path_name);
-        false
-    }
-}
 
 pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::from_matches(matches);

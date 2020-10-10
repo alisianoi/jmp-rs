@@ -5,6 +5,7 @@ use clap::{App, Arg, SubCommand};
 mod config;
 mod env;
 mod logger;
+mod path;
 mod subcommand;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
