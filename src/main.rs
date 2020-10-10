@@ -18,6 +18,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .multiple(false)
         .help("Disables all output");
 
+    let subcommand_xdg = SubCommand::with_name("xdg")
+        .about("Inspects XDG directories")
+        .arg(&arg_verbose)
+        .arg(&arg_quiet);
     let subcommand_jump = SubCommand::with_name("jump")
         .about("Jumps to a directory")
         .arg(&arg_verbose)
@@ -38,6 +42,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = App::new("jmp-rs")
         .arg(arg_verbose)
         .arg(arg_quiet)
+        .subcommand(subcommand_xdg)
         .subcommand(subcommand_jump)
         .subcommand(subcommand_install)
         .subcommand(subcommand_reinstall)
@@ -45,11 +50,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .get_matches();
 
     match args.subcommand() {
+        ("xdg", Some(matches)) => {
+            return subcommand::xdg::run(&matches);
+        }
+        ("jump", Some(_)) => {
+            println!("subcommand: jump");
+        }
         ("install", Some(matches)) => {
             return subcommand::install::run(&matches);
         }
         ("uninstall", Some(_)) => {
             println!("subcommand: uninstall");
+        }
+        ("reinstall", Some(_)) => {
+            println!("subcommand; reinstall");
         }
         ("", None) => {
             println!("no subcommands");
