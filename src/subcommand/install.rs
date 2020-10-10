@@ -1,11 +1,10 @@
+use crate::config::Config;
+use crate::logger::setup_logger;
+use clap::ArgMatches;
 use log::{debug, error, info, trace, warn};
 use std::env;
 use std::env::VarError;
 use std::path;
-
-use crate::config::Config;
-use crate::logger::setup_logger;
-use clap::ArgMatches;
 
 pub fn var(name: &str) -> Option<String> {
     match env::var(name) {
@@ -108,7 +107,7 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn std::error::Error>> {
         exists_if(&format!("{}/.zlogout", var_zdotdir), var_zdotdir_ok);
     let _exists_etc_zsh_zlogout = exists("/etc/zsh/zlogout");
 
-    trace!("Leave run (Ok)");
+    trace!("Leave run() (Ok)");
 
     Ok(())
 }
