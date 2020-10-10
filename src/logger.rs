@@ -21,7 +21,10 @@ pub fn setup_logger(config: &Config) -> Result<(), fern::InitError> {
                 ),
                 color_rgt = "\x1B[0m",
                 date = chrono::Local::now().format("%Y-%m-%d %H:%M:%S"),
-                target = record.target(),
+                // 28 is the maximum length for the target in this project,
+                // for example: jmp_rs::subcommand::uninstall
+                target = format!("{:28}", record.target()), // 28
+                // 5 is the maximum length for the log leve, e.g. DEBUG
                 level = format!("{:5}", level),
                 message = message
             ))
