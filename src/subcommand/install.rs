@@ -4,12 +4,51 @@ use crate::logger::setup_logger;
 use crate::path::{exists, exists_if};
 use clap::ArgMatches;
 use log::trace;
+use log::warn;
 use std::env;
+use std::fs::File;
+use std::io::{self, BufRead};
+use std::vec::Vec;
+
+pub fn read_lines(file_path: &str) -> io::Result<Vec<String>> {
+    trace!("Enter read_lines({})", file_path);
+
+    let file = File::open(file_path)?;
+
+    let mut lines = Vec::new();
+    for (number, line) in io::BufReader::new(file).lines().enumerate() {
+        let line = line?;
+
+        if line.is_empty() {
+            trace!("line {}: empty", number);
+            continue;
+        }
+
+        let parts: Vec<&str> = line.trim_start().splitn(2, '#').collect();
+
+        if parts[0].is_empty() && parts.len() > 1 {
+            trace!("line {}: comment-only", number);
+            continue;
+        } else if parts[0].is_empty() {
+            trace!("line {}: whitespace-only", number);
+            continue;
+        } else {
+            trace!("line {}: has content!", number);
+            lines.push(String::from(parts[0]));
+        }
+    }
+
+    trace!("Leave read_lines({}) (Ok)", file_path);
+
+    Ok(lines)
+}
 
 pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::from_matches(matches);
 
     setup_logger(&config)?;
+
+    read_lines("/etc/shells")?;
 
     let args: Vec<String> = env::args().collect();
     println!("{:?}", args);
