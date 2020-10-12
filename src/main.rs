@@ -4,8 +4,10 @@ use clap::{App, Arg, SubCommand};
 
 mod config;
 mod env;
+mod file;
 mod logger;
 mod path;
+mod shell;
 mod subcommand;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
