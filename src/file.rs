@@ -1,15 +1,29 @@
 use crate::shell::Shell;
-use log::{debug, trace};
+use log::{debug, trace, warn};
 use std::fs::File;
 use std::fs::{self, OpenOptions};
 use std::io::{self, BufRead, Write};
 use std::path::Path;
 use std::vec::Vec;
 
-// pub fn copy_once(shell: &Shell, target_path: &str) -> io::Result<()> {
-//     let uuid = fs::read_to_string(Path::new("shells/uuid.txt"))?;
-//     let uuid = uuid.trim_end();
-// }
+pub fn copy_once(shell: &Shell, target_path: &str) -> io::Result<()> {
+    let uuid = fs::read_to_string(Path::new("shells/uuid.txt"))?;
+    let uuid = uuid.trim_end();
+
+    let reader = File::open(&target_path)?;
+
+    for line in io::BufReader::new(reader).lines() {
+        let line = line?;
+
+        if line.contains(uuid) {
+            warn!("Found {} in {}", uuid, target_path);
+            warn!("Will *not* copy the config!");
+            return Ok(());
+        }
+    }
+
+    copy_for(shell, target_path)
+}
 
 pub fn copy_for(shell: &Shell, target_path: &str) -> io::Result<()> {
     let uuid = fs::read_to_string(Path::new("shells/uuid.txt"))?;
