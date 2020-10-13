@@ -1,5 +1,5 @@
 use crate::env::var_or_default;
-use crate::file::copy_for;
+use crate::file::copy_once;
 use crate::path::{exists, exists_if};
 use crate::shell::Shell;
 use log::debug;
@@ -48,10 +48,10 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     if exists_zdotdir_zshrc_local {
         debug!("Install for grml config to {}", zdotdir_zshrc_local_path);
-        copy_for(&Shell::ZSH, &zdotdir_zshrc_local_path)?;
+        copy_once(&Shell::ZSH, &zdotdir_zshrc_local_path)?;
     } else if exists_zdotdir_zshrc {
         debug!("Install for default config to {}", zdotdir_zshrc_path);
-        copy_for(&Shell::ZSH, &zdotdir_zshrc_path)?;
+        copy_once(&Shell::ZSH, &zdotdir_zshrc_path)?;
     } else {
         panic!("Don't know where to isntall ZSH");
     }
